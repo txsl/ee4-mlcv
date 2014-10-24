@@ -51,9 +51,9 @@ imshow(im_grey)
 i = 1;
 squares = cell(10,1);
 while i<=10,
-    square = rand*width;
-    xstart = rand*width;
-    ystart = rand*height;
+    square = round(rand*width);
+    xstart = round(rand*width);
+    ystart = round(rand*height);
     if xstart + square > width || ystart + square > height
         continue
     else
@@ -70,12 +70,19 @@ end
 % 5: 
 OUTPUT_DIM = 20;
 
+uniform_squares = cell(10,1);
+im_combined = uint8(zeros(400, 10));
 for i=1:10,
     [dim, ~] = size(squares{i});
     factor = OUTPUT_DIM/dim;
-    s = imresize(squares{i}, factor);
+    uniform_squares{i} = imresize(squares{i}, factor);
     figure;
-    imshow(s)
+    imshow(uniform_squares{i})
+    
+%     im_combined(:,i) = uint8(reshape(uniform_squares{i}, 1, 400));
+
+    im_combined(:,i) = uniform_squares{i}(:);
 end
 
-
+figure;
+imshow(im_combined)
