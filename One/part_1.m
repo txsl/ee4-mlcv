@@ -117,7 +117,7 @@ larger_im_combined = uint8(zeros(400, NUM_RANDOMS));
 for i=1:NUM_RANDOMS,
     [dim, ~] = size(more_squares{i});
     factor = OUTPUT_DIM/dim;
-    more_uniform_squares{i} = imresize(more_squares{i}, factor);
+    more_uniform_squares{i} = imresize(more_squares{i}, [20 20]);
 %     figure;
 %     imshow(uniform_squares{i})
         
