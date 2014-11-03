@@ -1,7 +1,7 @@
 
-ORIG_IMG = 'rah.jpg';
+ORIG_IMG = 'albert_hall.jpg';
 
-% Part one
+%% Part one
 
 % We can use imshow() directly, or load the data and 
 % imshow(ORIG_IMG)
@@ -13,38 +13,39 @@ im_data = imread(ORIG_IMG, 'JPEG');
 imshow(im_data)
 
 % New plot for 2.
-figure
-subplot(2,1,1);
+% figure
+% subplot(2,1,1);
 
 im_data_r = im_data;
 % Set all G and B values to 0
 im_data_r(:,:,2) = 0;
 im_data_r(:,:,3) = 0;
 
-imshow(im_data_r)
+% imshow(im_data_r)
 % image(im_data_r)
 % axis image
-imwrite(im_data_r, 'cat_r.jpg')
+imwrite(im_data_r, 'output_r.jpg')
 
 % Now to set all R and G values to 0
-subplot(2,1,2);
+% subplot(2,1,2);
 
 im_data_b = im_data;
 im_data_b(:,:,1) = 0;
 im_data_b(:,:,2) = 0;
 
-imshow(im_data_b)
+% imshow(im_data_b)
 % image(im_data_b)
 % axis image
-imwrite(im_data_r, 'cat_b.jpg')
+imwrite(im_data_b, 'output_b.jpg')
 
 
 % 3: convert to grayscale.
 dims = size(im_data);
 im_grey = uint8(mean(im_data, 3));
-
-figure;
-imshow(im_grey)
+imwrite(im_grey, 'output_grey.jpg')
+ 
+% figure;
+% imshow(im_grey)
 
 
 % 4: extracting 10 random square image patches
@@ -57,9 +58,9 @@ while i<=10,
     if xstart + square > width || ystart + square > height
         continue
     else
-        figure;
+%         figure;
         squares{i} = imcrop(im_grey, [xstart, ystart square square]);
-        imshow(squares{i})
+%         imshow(squares{i})
         filename = sprintf('sq_img_%d.jpg', i);
         imwrite(squares{i}, filename)
         i = i + 1;
@@ -67,15 +68,14 @@ while i<=10,
 end
 
 
-% 5: resizing and 
+% 5: resizing and turning in to a column vector
 OUTPUT_DIM = 20;
 
 uniform_squares = cell(10,1);
 im_combined = uint8(zeros(400, 10));
 for i=1:10,
     [dim, ~] = size(squares{i});
-    factor = OUTPUT_DIM/dim;
-    uniform_squares{i} = imresize(squares{i}, factor);
+    uniform_squares{i} = imresize(squares{i}, [OUTPUT_DIM OUTPUT_DIM]);
 %     figure;
 %     imshow(uniform_squares{i})
         
@@ -86,10 +86,14 @@ for i=1:10,
 end
 
 figure;
-imshow(im_combined)
+imagesc(im_combined)
+colormap gray
+imwrite(im_combined, 'im_combined_10.jpg')
 
 
-% Part 2, 1: 100 random squares
+
+%% Part 2
+%1: 100 random squares
 NUM_RANDOMS = 100;
 OUTPUT_DIM = 20;
 
@@ -128,14 +132,58 @@ for i=1:NUM_RANDOMS,
 end
 
 figure;
-imshow(larger_im_combined)
-
+imagesc(larger_im_combined)
+colormap gray
 
 
 % 2: mean vector and covariance matrix
 
 % Mean:
-mean_vector = sum(larger_im_combined)/400;
+mean_vector = uint8(sum(larger_im_combined, 2)/100);
+matlab_mean = uint8(mean(larger_im_combined, 2));
+
+if isequal(mean_vector, matlab_mean)
+    disp('MATLAB function and manually calculated mean the same')
+else
+    disp('MATLAB function and manually calculated mean NOT the same')
+end
+
+mean_sq = reshape(mean_vector, [20 20]);
+big_mean_sq = imresize(mean_sq, [400 400]);
+
+matlab_mean_sq = reshape(matlab_mean, [20 20]);
+big_matlab_mean_sq = imresize(matlab_mean_sq, [400 400]);
+
+
+figure;
+imagesc(mean_sq)
+colormap gray
+
+figure;
+imagesc(matlab_mean_sq);
+colormap gray
+
+figure;
+imagesc(big_mean_sq)
+colormap gray
+
+figure;
+imagesc(big_matlab_mean_sq);
+colormap gray
 
 % Covariance Matrix:
+mu = repmat(sum(larger_im_combined, 2)/100, [1 NUM_RANDOMS]);
+diff = double(larger_im_combined) - mu;
+covariance = 1/(NUM_RANDOMS-1).*diff*diff';
+
+matlab_cov = cov(double(larger_im_combined'));
+
+
+figure;
+imagesc(covariance)
+colormap gray
+
+figure;
+imagesc(matlab_cov);
+colormap gray
 
