@@ -8,13 +8,18 @@ im_data = imread(ORIG_IMG, 'JPEG');
 %% Part one
 reshaped_im_data = double(reshape(im_data, width*height, 3));
 
-% K = [3, 10, 20];
-K = [3];
+K = [3, 10, 20];
 
 
 for i = K
-    res = cmeans(reshaped_im_data, i);
-    km(:,:,1) = reshape(res.X(:,1), height, width);
-    km(:,:,2) = reshape(res.X(:,2), height, width);
-    km(:,:,3) = reshape(res.X(:,3), height, width);
+    [model, res.y] = cmeans(reshaped_im_data', i);
+
+    output = model.X(:, res.y);
+    
+    output = uint8(reshape_cmeans_to_im(output, height, width));
+    
+    figure;
+    imshow(output);
+    
+    imwrite(output, sprintf('%d-clusers-kmeans-full-img.jpeg', i));
 end
