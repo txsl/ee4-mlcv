@@ -49,6 +49,101 @@ while i<=NUM_RANDOMS,
     end
 end
 
+K = 3;
+[model, res.y] = cmeans(double(im_combined), K);
+figure;
+for i=1:K
+    im = reshape(model.X(:,i), 20, 20);
+    subplot(1, K, i);
+    imshow(uint8(im));
+end
 
+K = 20;
+[model, res.y] = cmeans(double(im_combined), K);
+figure;
+for i=1:K
+    im = reshape(model.X(:,i), 20, 20);
+    subplot(4, K/4, i);
+    imshow(uint8(im));
+end
+
+
+%% 3
+
+K = 12;
+[model, res.y] = cmeans_custom(double(im_combined), K);  % customised to export each trial output
+
+figure;
+for j=1:K
+    subplot(K, 1, j)
+    imshow(uint8(reshape(model.initial(:,j), OUTPUT_DIM, OUTPUT_DIM)))
+end
+
+iterations = model.t;
+for i=1:iterations
+    this_iteration = model.stages{i};
+    figure;
+    for j=1:K
+        subplot(K, 1, j)
+        imshow(uint8(reshape(this_iteration(:,j), OUTPUT_DIM, OUTPUT_DIM)))
+    end
+end
+
+figure;
+plot(model.MsErr);
+
+
+%% 4
+
+K = 12;
+NUM_TRIALS = 4;
+
+trials = cell(4,1);
+for i=1:NUM_TRIALS
+    trials{i} = cmeans_custom_save_initial(double(im_combined), K);
+    
+    % Print the original image before K means
+    figure;
+    for j=1:K
+        subplot(K, 1, j)
+        imshow(uint8(reshape(trials{i, 1}.initial(:,j), OUTPUT_DIM, OUTPUT_DIM)))
+    end
+    
+    % And the output
+    figure;
+    for j=1:K
+        subplot(K, 1, j)
+        imshow(uint8(reshape(trials{i, 1}.X(:,j), OUTPUT_DIM, OUTPUT_DIM)))
+    end
+end
+
+% Objective function plot
+figure;
+hold all
+for i=1:NUM_TRIALS
+    plot(trials{i}.MsErr);
+end
+
+
+%% 5 GMM
+
+% The line below fails, because of the singularity problem
+% output = emgmm(double(im_combined));
+
+OUTPUT_DIM = 5;
+patches = generate_patches(im_grey, 1000, OUTPUT_DIM);
+
+options.ncomp = 4;
+output = emgmm(double(patches), options);
+
+figure;
+for i=1:options.ncomp
+    subplot(2, options.ncomp, i)
+    imagesc(reshape(output.Mean(:,i), OUTPUT_DIM, OUTPUT_DIM))
+    
+    subplot(2, options.ncomp, i + options.ncomp)
+    imagesc(output.Cov(:,:,i))
+end
+colormap('default')
 
 
