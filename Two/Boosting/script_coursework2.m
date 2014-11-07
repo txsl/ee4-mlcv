@@ -9,6 +9,8 @@ setup;
 load ImgData_tr; ImgData = ImgData_tr; clear ImgData_tr;
 
 
+addpath('..')
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % // Q. Data generation 
 % // Face image patches are provided in ImgData.Pos. //
@@ -23,6 +25,26 @@ load ImgData_tr; ImgData = ImgData_tr; clear ImgData_tr;
 % samples
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+[~, ~, POS_SAMPLES] = size(ImgData.Pos);
+
+NUM_NEGATIVES = POS_SAMPLES * 10;
+IMG_SIZE = 24;
+
+images = dir('negative_images/*');
+images(1) = [];
+images(1) = [];
+
+[n, ~] = size(images);
+
+PATCHES_PER_IMAGE = round((NUM_NEGATIVES/n)+0.5);
+ImgData.Neg = zeros(IMG_SIZE, IMG_SIZE, PATCHES_PER_IMAGE*n);
+
+for i=1:n
+    im_data = imread(strcat('negative_images/', images(i).name), 'JPEG');
+    im_data = uint8(mean(im_data, 3));
+
+    ImgData.Neg(:,:, 1+((i-1)*PATCHES_PER_IMAGE):(i)*PATCHES_PER_IMAGE) = generate_patches(im_data, PATCHES_PER_IMAGE, IMG_SIZE);
+end
 
 % Adaboost leanring
 DataProcess; % prepare training data in the format
