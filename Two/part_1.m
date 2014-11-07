@@ -131,7 +131,7 @@ end
 % output = emgmm(double(im_combined));
 
 OUTPUT_DIM = 5;
-patches = generate_patches(im_grey, 1000, OUTPUT_DIM);
+patches = generate_patches_cv(im_grey, 1000, OUTPUT_DIM);
 
 options.ncomp = 4;
 output = emgmm(double(patches), options);

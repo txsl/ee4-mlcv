@@ -1,11 +1,11 @@
-function [ im_combined ] = generate_patches( image, num_random, output_dims )
+function [ im_combined ] = generate_patches_cv( image, num_random, output_dims )
 %GENERATE_PATCHES Returns random vector column of given image
 %   Detailed explanation goes here
 
 [height, width, ~] = size(image);
 
 patches = cell(num_random,1);
-im_combined = uint8(zeros(output_dims, output_dims, num_random));
+im_combined = uint8(zeros(output_dims^2, num_random));
 
 
 
@@ -18,8 +18,8 @@ while i<=num_random,
         continue
     else
         square = imcrop(image, [xstart, ystart square square]);
-        patch = imresize(square, [output_dims output_dims]);
-        im_combined(:,:,i) = patch;
+        patches{i} = imresize(square, [output_dims output_dims]);
+        im_combined(:,i) = patches{i}(:);
         i = i + 1;
     end
 end
