@@ -147,3 +147,37 @@ end
 colormap('default')
 
 
+%% 6 
+
+% Try with diagonal covariance matrix
+options.cov_type = 'diag';
+output = emgmm(double(patches), options);
+
+figure;
+for i=1:options.ncomp
+    subplot(2, options.ncomp, i)
+    imagesc(reshape(output.Mean(:,i), OUTPUT_DIM, OUTPUT_DIM))
+    
+    subplot(2, options.ncomp, i + options.ncomp)
+    imagesc(output.Cov(:,:,i))
+end
+colormap('default')
+
+
+% Try with cmeans initialisation (and reset the covariance matrix)
+options.cov_type = 'full';
+options.init = 'cmeans';
+output = emgmm(double(patches), options);
+
+figure;
+for i=1:options.ncomp
+    subplot(2, options.ncomp, i)
+    imagesc(reshape(output.Mean(:,i), OUTPUT_DIM, OUTPUT_DIM))
+    
+    subplot(2, options.ncomp, i + options.ncomp)
+    imagesc(output.Cov(:,:,i))
+end
+colormap('default')
+
+
+
