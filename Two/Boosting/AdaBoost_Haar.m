@@ -13,6 +13,8 @@ model.WeightedErr = [];
 model.ErrBound = [];
 model.rule = [];
 
+model.Accuracy = [];
+
 t = 0;
 go = 1;
 while go,
@@ -33,13 +35,27 @@ while go,
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % // write your code here to compute the weighted error (werr)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % werr =  
+    [~, s] = size(y);
+    old_ignore_trix = zeros(s, 1);
+    for i=1:s
+        if y(i) == data.y(i)
+            old_ignore_trix(i) = 0;
+        else
+            old_ignore_trix(i) = 1;
+        end
+    end
+
+    ignore_trix = y ~= data.y;
+
+    werr = (data.D' * ignore_trix')/sum(data.D);
     
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % // write your code here to compute the alpha
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % alpha = 
+    alpha = log((1 - werr)/werr);
+%     model.PastAlphas(end+1) = alpha;
+
            
     
        
@@ -47,13 +63,14 @@ while go,
     % // write your code here to update the weights
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % ...
-    % weights =
+    
+    our_weights = data.D' .* exp(alpha*ignore_trix);
     
     
       
     % normalization constant
-    Z = sum(weights);
-    data.D = weights/Z;
+    Z = sum(our_weights);
+    data.D = our_weights'/Z;
     
     % upper bound on the training error
     err_bound = prod(model.Z);
@@ -71,6 +88,8 @@ while go,
     % recognition accuracy on the training data 
     [y dfec] = feval(model.fun, imgs, X, model);
     length(find(data.y==y))/length(data.y)
+    
+    model.Accuracy = [model.Accuracy; length(find(data.y==y))/length(data.y)];
     
     
     % stopping conditions

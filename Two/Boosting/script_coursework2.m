@@ -8,7 +8,7 @@ setup;
 % Training data collection
 load ImgData_tr; ImgData = ImgData_tr; clear ImgData_tr;
 
-
+% To give us access to the function generate_patches()
 addpath('..')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -25,6 +25,8 @@ addpath('..')
 % samples
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+% Loading images and generating patches
 [~, ~, POS_SAMPLES] = size(ImgData.Pos);
 
 NUM_NEGATIVES = POS_SAMPLES * 10;
@@ -46,11 +48,13 @@ for i=1:n
     ImgData.Neg(:,:, 1+((i-1)*PATCHES_PER_IMAGE):(i)*PATCHES_PER_IMAGE) = generate_patches(im_data, PATCHES_PER_IMAGE, IMG_SIZE);
 end
 
+ImgData.Neg = uint8(ImgData.Neg);
+
 % Adaboost leanring
 DataProcess; % prepare training data in the format
 WeakLearnerList; % build the list of weak learners
 
-options.max_rules = 1;
+options.max_rules = 20;
 options.learner = 'trainweak_fast';
 
 fprintf('AdaBoost learning\n');
@@ -61,6 +65,12 @@ fprintf('AdaBoost learning\n');
 % // Q. Modify the function AdaBoost_Haar //
 model = AdaBoost_Haar(data,imgs,X,cl,options);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+figure;
+plot(model.Alpha)
+
+figure;
+plot(model.Accuracy)
 
 save model_adaboost model;
 
