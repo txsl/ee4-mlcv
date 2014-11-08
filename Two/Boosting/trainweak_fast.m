@@ -3,6 +3,7 @@ function cl_best = trainweak_fast(imgs, X, Y, clist, D)
   n_data = size(X,2);  
 
   index = selectN(D, n_data); index = unique(index);
+  size(index)
   newX = X(:, index);
   newY = Y(index);
   newD = D(index);

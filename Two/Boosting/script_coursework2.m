@@ -89,13 +89,21 @@ DataProcess; % prepare test data
 % // on the test data set //
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+[y dfce] = feval(model.fun, imgs, X, model);
+accuracy = length(find(data.y==y))/length(data.y);
+
+fprintf('Accuracy when measured against test samples: %.2f%% \n', accuracy*100);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % // Q. Write your code here to draw ROC curve //
 % // for the test data set //
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+[tpr, fpr] = roc(dfce, data.y);
 
+figure;
+plot(tpr, fpr)
 
+pause 
 
 % Testing (face detection in images)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -118,20 +126,32 @@ num_weaklearners = size(model.rule,2);
 %   a [5 x num_faces_detected] : detected faces
 %   a(2:5,:) : box coordinates containing the faces
 
-a = findface(img, weaklearners, alphas); % main detection function
+% a = findface(img, weaklearners, alphas); % main detection function
 
+for i=1:5
+    img = imread(strcat(pathname, ff(i).name), 'JPEG');
+    a = findface(img, cell2mat(model.rule), model.Alpha); % main detection function
 
-% compute the response map 
-rmap = zeros(size(img,1),size(img,2));
-for J=1:size(a, 2) 
-    rmap(a(2,J):a(4,J),a(3,J):a(5,J)) = rmap(a(2,J):a(4,J),a(3,J):a(5,J)) + 1;
+    % compute the response map 
+    rmap = zeros(size(img,1),size(img,2));
+    for J=1:size(a, 2) 
+        rmap(a(2,J):a(4,J),a(3,J):a(5,J)) = rmap(a(2,J):a(4,J),a(3,J):a(5,J)) + 1;
+    end
+    
+    figure;
+    subplot(1,2,1);
+    imshow(img);
+    
+    subplot(1,2,2);
+    imagesc(uint8(rmap));
+    axis image;
+    colormap hsv;
 end
-
 % ...
 
 
 
-
+colormap hsv;
 
 
 
