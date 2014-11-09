@@ -43,24 +43,19 @@ while go,
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % // write your code here to compute the alpha
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    alpha = log((1 - werr)/werr);
-%     model.PastAlphas(end+1) = alpha;
-
-           
+    alpha = log((1 - werr)/werr);          
     
        
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % // write your code here to update the weights
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % ...
     
     our_weights = data.D' .* exp(alpha*ignore_trix);
     
     
-      
     % normalization constant
     Z = sum(our_weights);
-    data.D = our_weights'/Z;
+    data.D = our_weights'/Z;  % Transpose the our_weights matrix to remain the same dimension as data.D
     
     % upper bound on the training error
     err_bound = prod(model.Z);
