@@ -91,6 +91,8 @@ end
 
 figure;
 plot(model.MsErr);
+ylabel('J');
+xlabel('Iteration');
 
 
 %% 4
@@ -123,7 +125,8 @@ hold all
 for i=1:NUM_TRIALS
     plot(trials{i}.MsErr);
 end
-
+ylabel('J');
+xlabel('Iteration');
 
 %% 5 GMM
 

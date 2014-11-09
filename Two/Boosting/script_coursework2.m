@@ -3,7 +3,7 @@
 % <a href="http://www.iis.ee.ic.ac.uk/icvl/">Personal Webpage</a>
 
 % Compile C files
-setup;
+% setup;
 
 % Training data collection
 load ImgData_tr; ImgData = ImgData_tr; clear ImgData_tr;
@@ -96,7 +96,7 @@ DataProcess; % prepare test data
 % // on the test data set //
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[y dfce] = feval(model.fun, imgs, X, model);
+[y, dfce] = feval(model.fun, imgs, X, model);
 accuracy = length(find(data.y==y))/length(data.y);
 
 fprintf('Accuracy when measured against test samples: %.2f%% \n', accuracy*100);
