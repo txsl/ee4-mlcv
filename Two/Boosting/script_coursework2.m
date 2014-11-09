@@ -68,9 +68,16 @@ model = AdaBoost_Haar(data,imgs,X,cl,options);
 
 figure;
 plot(model.Alpha)
+title('\alpha value through boosting rounds');
+ylabel('\alpha_m');
+xlabel('Boosting Round (m)');
 
 figure;
 plot(model.Accuracy)
+title('Training data accuracy through boosting rounds');
+ylabel('Training data accuracy');
+xlabel('Boosting Round(m)');
+
 
 save model_adaboost model;
 
@@ -102,8 +109,10 @@ fprintf('Accuracy when measured against test samples: %.2f%% \n', accuracy*100);
 
 figure;
 plot(tpr, fpr)
+title('ROC based on test data');
+ylabel('False Negatives');
+xlabel('False Positives');
 
-pause 
 
 % Testing (face detection in images)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
