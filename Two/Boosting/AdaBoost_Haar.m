@@ -1,4 +1,4 @@
-function model = AdaBoost_Haar(data,imgs,X,cl,options)
+ function model = AdaBoost_Haar(data,imgs,X,cl,options)
 
 % data dimensions
 dim = 24*24; num_data = size(X,2);
@@ -35,15 +35,6 @@ while go,
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % // write your code here to compute the weighted error (werr)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    [~, s] = size(y);
-%     old_ignore_trix = zeros(s, 1);
-%     for i=1:s
-%         if y(i) == data.y(i)
-%             old_ignore_trix(i) = 0;
-%         else
-%             old_ignore_trix(i) = 1;
-%         end
-%     end
 
     ignore_trix = y ~= data.y;
 

@@ -2,8 +2,10 @@
 % (C) 2014, Written by Tae-Kyun Kim
 % <a href="http://www.iis.ee.ic.ac.uk/icvl/">Personal Webpage</a>
 
+clear
+
 % Compile C files
-setup;
+% setup;
 
 % Training data collection
 load ImgData_tr; ImgData = ImgData_tr; clear ImgData_tr;
@@ -150,17 +152,13 @@ for i=1:5
     figure;
     subplot(1,2,1);
     imshow(img);
+    freezeColors
     
     subplot(1,2,2);
     imagesc(uint8(rmap));
     axis image;
     colormap hsv;
 end
-% ...
-
-
-
-colormap hsv;
 
 
 
