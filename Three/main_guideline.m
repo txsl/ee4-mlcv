@@ -66,6 +66,7 @@ T = 1; % the trees number 1
 % See function getE.m for details of entropy calculation
 
 ig_best = -inf;
+idx_size = size(idx, 1);
 for n = 1:3
     dim = randi(D-1);                           % Pick one random dimension as a split function
     d_min = single(min(data_train(idx,dim)));   % Find the data range of this dimension
@@ -74,12 +75,13 @@ for n = 1:3
     
     
     
-    idx_left = data_train(idx,dim) < t;            % idx_: index of data going to the left-child node by chosen dimension and threshold
-    idx_right = ~idx_left;
+    idx_ = data_train(idx,dim) < t;            % idx_: index of data going to the left-child node by chosen dimension and threshold
+    idx_r = ~idx_;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%
     % calculate information gain
     
-    ig = ...; % information gain
+    
+    ig = -(sum(idx_)/idx_size) * getE(histc(data_train(idx_,end),labels)/length(idx)) -(sum(idx_r)/idx_size) * getE(histc(data_train(idx_r,end),labels)/length(idx)); % information gain
     
     if ig_best < ig
         ig_best = ig;   % maximu information gain saved

@@ -54,13 +54,13 @@ end
 
 function ig = getIG(data,idx) % Information Gain - the 'purity' of data labels in both child nodes after split. The higher the purer.
 
-...
+ -(sum(idx_)/idx_size) * getE(histc(data_train(idx_,end),labels)/length(idx)) -(sum(idx_r)/idx_size) * getE(histc(data_train(idx_r,end),labels)/length(idx))
     
 end
 
 function H = getE(X) % Entropy
 
-...
+H = getE(X);
     
 end
 

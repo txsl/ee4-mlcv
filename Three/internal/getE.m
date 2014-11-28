@@ -1,3 +1,3 @@
-function H = getE(X) % Entropy
-... % write your own codes
+function H = getE(X)
+H = -sum(X.*log(X));
 end
