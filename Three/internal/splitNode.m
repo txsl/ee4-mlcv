@@ -28,7 +28,7 @@ for n = 1:iter
     d_max = single(max(data(:,dim))) - eps;
     t = d_min + rand*((d_max-d_min)); % Pick a random value within the range as threshold
     
-    idx_ = ...
+    idx_ = data(:,dim) < t;
     
     ig = getIG(data,idx_); % Calculate information gain
     
@@ -54,14 +54,20 @@ end
 
 function ig = getIG(data,idx) % Information Gain - the 'purity' of data labels in both child nodes after split. The higher the purer.
 
- -(sum(idx_)/idx_size) * getE(histc(data_train(idx_,end),labels)/length(idx)) -(sum(idx_r)/idx_size) * getE(histc(data_train(idx_r,end),labels)/length(idx))
-    
+idx_size = size(idx, 1);
+l_branch = data(idx,:);
+r_branch = data(~idx,:);
+ig = - ( (sum(idx)/idx_size) * getE(l_branch) ) - ( (sum(~idx)/idx_size) * getE(r_branch) );
+
 end
 
 function H = getE(X) % Entropy
 
-H = getE(X);
-    
+distrib = histc(X(:,1:end), unique(X(:,end)));
+p = distrib/sum(distrib);
+H = p .* log(p);
+H = -sum(H);
+
 end
 
 function [node, ig_best, idx_best] = updateIG(node,ig_best,ig,t,idx,dim,idx_best) % Update information gain
