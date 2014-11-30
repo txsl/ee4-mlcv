@@ -78,17 +78,16 @@ for n = 1:3
     d_min = single(min(data_train(idx,dim)));   % Find the data range of this dimension
     d_max = single(max(data_train(idx,dim)));
     t = d_min + rand*((d_max-d_min));           % Pick a random value within the range as threshold
- 
+
     idx_ = data_train(idx,dim) < t;            % idx_: index of data going to the left-child node by chosen dimension and threshold
     idx_r = ~idx_;
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     % calculate information gain
     l_branch = data_train(idx_,:);
     r_branch = data_train(idx_r,:);
     
     ig = -((sum(idx_)/idx_size) * getE(l_branch)) - ((sum(idx_r)/idx_size) * getE(r_branch)); % information gain
 
-    
     if ig_best < ig
         ig_best = ig;   % maximu information gain saved
         t_best = t;     % the best threhold to save
@@ -110,7 +109,7 @@ visualise_splitfunc(idx_best,data_train(idx,:),dim_best,t_best,ig_best,0);
 disp('Shown some sample first node splits');
 pause
 
-%% Q4 
+%% Q5
 
 % Initialise base node
 trees(T).node(1) = struct('idx',idx,'t',nan,'dim',-1,'prob',[]);
@@ -124,7 +123,6 @@ makeLeaf;
 disp('Initialised base node and split them');
 pause
 
-%% Q5
 % Visualise the class distributions of the first 9 leaf nodes
 visualise_leaf
 % close all;
@@ -188,7 +186,7 @@ p_rf_all = squeeze(sum(p_rf_all,3))/length(trees);
 visualise(data_train,p_rf_all,[],0);
 
 
-%%
+%% Q8
 
 % Test on the dense data by SVM, compare with the RF result
 disp('Training SVM...');
@@ -203,7 +201,7 @@ visualise(data_train,p_rf_all,p_svm_prob,1);
 
 
 
-
+%% Q9
 % try different parameter values and see the effects
 
 
@@ -257,7 +255,7 @@ end
 
 
 
-
+%% Q10
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % experiment with Caltech101 dataset for image categorisation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -283,5 +281,6 @@ trees = growTrees(data_train,param);
 % Test Random Forest
 testTrees_script;
 
+%% Q11
 % show accuracy and confusion matrix
 confus_script;

@@ -1,3 +1,4 @@
+figure
 for L = 1:9
 try
 subplot(3,3,L);
