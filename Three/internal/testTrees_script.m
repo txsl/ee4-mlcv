@@ -2,8 +2,14 @@
 leaf_assign = testTrees_fast(data_test,trees);
 
 for T = 1:length(trees)
-    p_rf(:,:,uint8(T)) = trees(1).prob(leaf_assign(:,uint8(T)),:);
+    test = leaf_assign(:,uint8(T));
+    test(test==0) = 1;
+    p_rf(:,:,uint8(T)) = trees(1).prob(test,:);
 end
+
+% for T = 1:length(trees)
+%     p_rf(:,:,uint8(T)) = trees(1).prob(leaf_assign(:,uint8(T)),:);
+% end
 
 % average the results from all trees
 p_rf = squeeze(sum(p_rf,3))/length(trees); % Regression

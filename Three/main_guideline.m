@@ -172,6 +172,9 @@ end
 hold off;
 close all;
 
+disp('Q6: Plotted sample points')
+pause
+
 %% Q7
 % Test on the dense data by RF
 leaves = testTrees_fast(data_test,trees);
@@ -185,6 +188,8 @@ p_rf_all = squeeze(sum(p_rf_all,3))/length(trees);
 % Visualise
 visualise(data_train,p_rf_all,[],0);
 
+disp('Q7: Visualised the class distribution in 2D with colour')
+pause
 
 %% Q8
 
@@ -199,7 +204,8 @@ disp('Testing SVM...');
 % Visualise
 visualise(data_train,p_rf_all,p_svm_prob,1);
 
-
+disp('Q8: SVM')
+pause
 
 %% Q9
 % try different parameter values and see the effects
@@ -230,8 +236,11 @@ for N = [1,3,5,10,20]; % Number of trees, try {1,3,5,10, or 20}
     pause;
 end
 
+disp('Q9: Changed the number of trees')
+pause
+
 % change the tree depth
-for N = [2,5,7,11]; % Number of trees, try {2,5,7,11}
+for N = [7,11]; % Number of trees, try {2,5,7,11}
     init;
     param.num = 20;
     param.depth = N;    % trees depth
@@ -253,7 +262,8 @@ for N = [2,5,7,11]; % Number of trees, try {2,5,7,11}
     pause;
 end
 
-
+disp('Q9: Changed the tree depth')
+pause
 
 %% Q10
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
