@@ -125,7 +125,7 @@ switch MODE
         
         numBins = 256; 
         
-        book_of_words = vl_kmeans(desc_sel, numBins);
+        book_of_words = vl_kmeans(desc_sel, numBins, 'algorithm', 'elkan');
             
        
         disp('Encoding Images...')
@@ -135,8 +135,6 @@ switch MODE
         data_train = zeros(num_classes*num_samples, numBins+1);
         for i = 1:num_classes %  Number of classes in the training set
             for j = 1:num_samples
-%                 bow = book_of_words'
-%                 samp = desc_tr{i,j};
                 distance = pdist2(book_of_words' , desc_tr{i,j}');
                 [ ~, hist_idx ]= min(distance);
                 
@@ -185,12 +183,14 @@ switch MODE
 %         suptitle('Testing image samples');
                 if showImg
             figure('Units','normalized','Position',[.5 .1 .4 .9]);
-%         suptitle('Testing image representations: 256-D histograms');
+        suptitle('Testing image representations: 256-D histograms');
         end
 
         % Quantisation
         
         k = 1;
+        l = 1;
+        m = 1;
         [ num_classes, num_samples ] = size(desc_te);
         data_query = zeros(num_classes*num_samples, numBins+1);
         for i = 1:num_classes %  Number of classes in the training set
@@ -200,6 +200,16 @@ switch MODE
                 data_query(k, 1:end-1) = hist(hist_idx, numBins);
                 data_query(k, end) = i;
                 k = k + 1;
+                
+                % Look at histogram
+                if i < 6 & showImg
+                    subaxis(length(classList),5,m,'SpacingVert',0,'MR',0);
+                    bar(data_query(l,1:end-1));
+                    m = m+1;
+                    drawnow;
+                end
+                 
+                l = l+1;
             end
         end
         
