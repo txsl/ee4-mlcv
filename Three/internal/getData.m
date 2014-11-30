@@ -89,7 +89,7 @@ switch MODE
         cnt = 1;
         if showImg
             figure('Units','normalized','Position',[.05 .1 .4 .9]);
-            suptitle('Training image samples');
+%             suptitle('Training image samples');
         end
         for c = 1:length(classList)
             subFolderName = fullfile(folderName,classList{c});
@@ -119,22 +119,32 @@ switch MODE
         end
         
         disp('Building visual codebook...')
-        % Build visual vocabulary (codebook) for 'Bag-of-Words method'
+        % Build visual vocabulary (c
+        % K-means clusteringodebook) for 'Bag-of-Words method'
         desc_sel = single(vl_colsubset(cat(2,desc_tr{:}), 10e4)); % Randomly select 100k SIFT descriptors for clustering
         
-        % K-means clustering
         numBins = 256; 
         
-        ... % write your own codes here
+        book_of_words = vl_kmeans(desc_sel, numBins);
             
        
         disp('Encoding Images...')
         % Vector Quantisation
-        
-        ... % write your own codes here
-        
-    
-  
+        k = 1;
+        [ num_classes, num_samples ] = size(desc_tr); 
+        data_train = zeros(num_classes*num_samples, numBins+1);
+        for i = 1:num_classes %  Number of classes in the training set
+            for j = 1:num_samples
+%                 bow = book_of_words'
+%                 samp = desc_tr{i,j};
+                distance = pdist2(book_of_words' , desc_tr{i,j}');
+                [ ~, hist_idx ]= min(distance);
+                
+                data_train(k, 1:end-1) = hist(hist_idx, numBins);
+                data_train(k, end) = i;
+                k = k + 1;
+            end
+        end
         
         % Clear unused varibles to save memory
         clearvars desc_tr desc_sel
@@ -144,7 +154,7 @@ switch MODE
     case 'Caltech'
         if showImg
         figure('Units','normalized','Position',[.05 .1 .4 .9]);
-        suptitle('Testing image samples');
+%         suptitle('Testing image samples');
         end
         disp('Processing testing images...');
         cnt = 1;
@@ -172,16 +182,26 @@ switch MODE
             
             end
         end
-        suptitle('Testing image samples');
+%         suptitle('Testing image samples');
                 if showImg
             figure('Units','normalized','Position',[.5 .1 .4 .9]);
-        suptitle('Testing image representations: 256-D histograms');
+%         suptitle('Testing image representations: 256-D histograms');
         end
 
         % Quantisation
         
-        ... % write your own codes here
-        
+        k = 1;
+        [ num_classes, num_samples ] = size(desc_te);
+        data_query = zeros(num_classes*num_samples, numBins+1);
+        for i = 1:num_classes %  Number of classes in the training set
+            for j = 1:num_samples
+                distance = pdist2(book_of_words' , desc_te{i,j}');
+                [ ~, hist_idx ]= min(distance);
+                data_query(k, 1:end-1) = hist(hist_idx, numBins);
+                data_query(k, end) = i;
+                k = k + 1;
+            end
+        end
         
     otherwise % Dense point for 2D toy data
         xrange = [-1.5 1.5];
