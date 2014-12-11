@@ -278,7 +278,7 @@ param.split = 'IG'; % Currently support 'information gain' only
 
 % Select dataset
 [data_train, data_test] = getData('Caltech');
-close all;
+% close all;
 
 % we do bag-of-words technique to convert images to vectors (histogram of codewords)
 
@@ -290,6 +290,9 @@ trees = growTrees(data_train,param);
 
 % Test Random Forest
 testTrees_script;
+
+accuracy = c==data_test(:,end)';
+
 
 %% Q11
 % show accuracy and confusion matrix

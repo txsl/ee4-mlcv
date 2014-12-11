@@ -4,5 +4,6 @@ idx = sub2ind([10, 10], data_test(:,end)', c) ;
 conf = zeros(10) ;
 conf = vl_binsum(conf, ones(size(idx)), idx) ;
 
+figure
 imagesc(conf) ;
 title(sprintf('Confusion matrix (%.2f %% accuracy)', 100 * accuracy_rf) ) ;
