@@ -45,5 +45,31 @@ end
 %     end
 % end
 
-cov(all_tr')  % Since each column is an observation, and each row is a variable, and each column an observation
+% cov(all_tr')  % Since each column is an observation, and each row is a variable, and each column an observation
+mean_big = mean(all_tr, 2);
+A_big = all_tr - repmat(mean_big, 1, size(all_tr, 2));
 
+cov_big = A_big * A_big';
+[ eigvecs_big, eigvals_big] = eig(cov_big, 'vector');
+[ ~, I_big] = sort(eigvals_big, 'descend');
+
+pca_big = zeros(IM_WIDTH*IM_HEIGHT, 50);
+for i=1:50
+    idx = I_big(i);
+    pca_big(:,i) = eigvecs_big(:,idx);
+end
+
+%% Q4
+
+im_c = reshape(uint8(mean_big), [ IM_HEIGHT IM_WIDTH ]);
+figure
+imshow(im_c)
+
+for i=1:50
+    figure;
+    idx = I_big(i);
+    eigval = eigvals_big(idx);
+    reconstruct = (pca_big(:,i) * eigval) + mean_big;
+    im_c = reshape(uint8(reconstruct), [ IM_HEIGHT IM_WIDTH ]);
+    imshow(im_c);
+end
