@@ -6,9 +6,9 @@ IM_WIDTH = 46;
 IM_HEIGHT = 56;
 IMS_PER_FACE = 10;
 
-num_faces = size(unique(l), 2);
+NUM_FACES = size(unique(l), 2);
 
-% [ distrib, ~ ] = histc(l, num_faces);
+% [ distrib, ~ ] = histc(l, NUM_FACES);
 
 % for i=1:size(X,2)
 %     figure
@@ -21,11 +21,11 @@ num_faces = size(unique(l), 2);
 
 %% Q2
 
-te = cell(num_faces, 1);
+te = cell(NUM_FACES, 1);
 tr = te;
 
 all_tr = [];
-for i=1:num_faces
+for i=1:NUM_FACES
     tr{i} = X(:,(10*(i-1))+1:(10*(i-1))+8);
     te{i} = X(:,(10*(i-1))+9:(10*(i-1))+10);
     all_tr = [ all_tr tr{i} ];
@@ -34,9 +34,9 @@ end
 
 %% Q3
 
-% diff = cell(num_faces, 1);
+% diff = cell(NUM_FACES, 1);
 % A = diff;
-% for i=1:num_faces
+% for i=1:NUM_FACES
 %     diff{i} = tr{i} - repmat(mean(tr{i}, 2), 1, 8);
 %     A{i} = cell(8,1);
 %     for j=1:8
@@ -81,6 +81,7 @@ end
 cov_small = A' * A;
 [ eigvecs_small, eigvals_small] = eig(cov_small, 'vector');
 vecs = A * eigvecs_small;
+vec_norms = normc(vecs);
 
 [ ~, I_small] = sort(eigvals_small, 'descend');
 
@@ -88,7 +89,7 @@ pca_small = zeros(IM_WIDTH*IM_HEIGHT, 50);
 
 for i=1:size(vecs, 2)
     idx = I_small(i);
-    pca_small(:,i) = vecs(:,idx)/mean(vecs(:,idx));
+    pca_small(:,i) = vec_norms(:,idx);  % vecs(:,idx)/
 end
 
 
@@ -114,9 +115,58 @@ for i=[1,20,50,400]
     figure
     showface(recon);
     colormap gray
+    title(sprintf('%i components', i))
 end
 
 
 %% Q9
+
+eigs = cell(NUM_FACES, 1);
+mean_ims = eigs;
+
+% Training
+for i=1:NUM_FACES
+    
+    set = tr{i};
+    mean_im = mean(set, 2);
+    A = set - repmat(mean_im, 1, size(set, 2));
+
+    cov_small = A' * A;
+    [eigvecs_small, eigvals_small ] = eig(cov_small, 'vector');
+    vecs = A * eigvecs_small;
+    vec_norms = normc(vecs);
+
+    [ ~, I_small] = sort(eigvals_small, 'descend');
+
+    pca_small = zeros(IM_WIDTH*IM_HEIGHT, 50);
+
+    for j=1:size(vecs, 2)
+        idx = I_small(j);
+        pca_small(:,j) = vec_norms(:,idx);
+    end
+    
+    eigs{i} = pca_small;
+    mean_ims{i} = mean_im;
+
+end
+
+
+% Testing
+for i=1:NUM_FACES
+    for j=1:2
+        for k=1:NUM_FACES
+            face_to_test = te{i}(:,j);
+            comps = eigs{k};
+            
+            mean_im = face_to_test - mean_ims{k};
+
+            Z = comps' * mean_im;
+            recon = (comps * Z) + mean_ims{k};
+            
+            pdist2(recon, face_to_test)  % need to take the diag
+        end
+    end
+end
+
 
 

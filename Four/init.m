@@ -1,0 +1,2 @@
+IM_WIDTH = 46;
+IM_HEIGHT = 56;
