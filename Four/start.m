@@ -86,9 +86,9 @@ vecs = A * eigvecs_small;
 
 pca_small = zeros(IM_WIDTH*IM_HEIGHT, 50);
 
-for i=1:50
+for i=1:size(vecs, 2)
     idx = I_small(i);
-    pca_small(:,i) = vecs(:,idx);
+    pca_small(:,i) = vecs(:,idx)/mean(vecs(:,idx));
 end
 
 
@@ -103,13 +103,20 @@ end
 
 %% Q8
 
-im = X(:,254);
-mean_im = im - mean(im);
-Z = mean_im;
+close all;
 
-for i=[20,50]
-    Z = pca_small(:,1:i)' * Z;
+im = X(:,254);
+mean_im = im - mean_tr;
+
+for i=[1,20,50,400]
+    Z = pca_small(:,1:i)' * mean_im;
+    recon = (pca_small(:,1:i) * Z) + mean_tr;
+    figure
+    showface(recon);
+    colormap gray
 end
 
+
+%% Q9
 
 
