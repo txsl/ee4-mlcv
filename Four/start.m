@@ -46,10 +46,10 @@ end
 % end
 
 % cov(all_tr')  % Since each column is an observation, and each row is a variable, and each column an observation
-mean_big = mean(all_tr, 2);
-A_big = all_tr - repmat(mean_big, 1, size(all_tr, 2));
+mean_tr = mean(all_tr, 2);
+A = all_tr - repmat(mean_tr, 1, size(all_tr, 2));
 
-cov_big = A_big * A_big';
+cov_big = A * A';
 [ eigvecs_big, eigvals_big] = eig(cov_big, 'vector');
 [ ~, I_big] = sort(eigvals_big, 'descend');
 
@@ -61,15 +61,55 @@ end
 
 %% Q4
 
-im_c = reshape(uint8(mean_big), [ IM_HEIGHT IM_WIDTH ]);
+im_c = reshape(uint8(mean_tr), [ IM_HEIGHT IM_WIDTH ]);
 figure
 imshow(im_c)
 
 for i=1:50
     figure;
-    idx = I_big(i);
-    eigval = eigvals_big(idx);
-    reconstruct = (pca_big(:,i) * eigval) + mean_big;
-    im_c = reshape(uint8(reconstruct), [ IM_HEIGHT IM_WIDTH ]);
-    imshow(im_c);
+%     idx = I_big(i);
+%     eigval = eigvals_big(idx);
+%     reconstruct = (pca_big(:,i) * eigval) + mean_big;
+%     im_c = reshape(uint8(reconstruct), [ IM_HEIGHT IM_WIDTH ]);
+    imagesc(reshape(pca_big(:,i), [ IM_HEIGHT IM_WIDTH ]));
+    colormap gray
 end
+
+
+%% Q5
+
+cov_small = A' * A;
+[ eigvecs_small, eigvals_small] = eig(cov_small, 'vector');
+vecs = A * eigvecs_small;
+
+[ ~, I_small] = sort(eigvals_small, 'descend');
+
+pca_small = zeros(IM_WIDTH*IM_HEIGHT, 50);
+
+for i=1:50
+    idx = I_small(i);
+    pca_small(:,i) = vecs(:,idx);
+end
+
+
+%% Q6
+
+for i=1:50
+    figure;
+    imagesc(reshape(pca_small(:,i), [ IM_HEIGHT IM_WIDTH ]));
+    colormap gray
+end
+
+
+%% Q8
+
+im = X(:,254);
+mean_im = im - mean(im);
+Z = mean_im;
+
+for i=[20,50]
+    Z = pca_small(:,1:i)' * Z;
+end
+
+
+
