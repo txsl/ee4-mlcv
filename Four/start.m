@@ -154,6 +154,7 @@ end
 % Testing
 face_guesses = [];
 known_faces = [];
+actual_faces = [];
 for i=1:NUM_FACES   % For each set of faces with test data
     for j=1:2       % For each face in the test series (2 per face)
         dist = 999999999999999999999;
@@ -178,10 +179,15 @@ for i=1:NUM_FACES   % For each set of faces with test data
         end
         fprintf('Closest face is %i. Correct is %i\n', face_guess, i);
         face_guesses = [face_guesses face_guess];
-        total = [total i];
+        actual_faces = [actual_faces i];
     end
 end
 
+results = ~(face_guesses - actual_faces);
+fprintf('Overall results: %3.2f%%\n', sum(results)/size(results,2)*100)
+
+figure
+imagesc(confusionmat(face_guesses, actual_faces));
 
 %% Q10
 
@@ -230,7 +236,7 @@ end
 face_guesses_class_mean = [];
 face_guesses_nearest_neighbour = [];
 known_faces = [];
-total = [];
+actual_faces = [];
 for i=1:NUM_FACES   % For each set of faces with test data
     for j=1:2       % For each face in the test series (2 per face)
         dist = 999999999999999999999;
@@ -263,8 +269,19 @@ for i=1:NUM_FACES   % For each set of faces with test data
         fprintf('Closest face is %i (class means) and %i (nearest neighbour). Correct is %i\n', face_guess_class_mean, face_guess_nn, i);
         face_guesses_class_mean = [face_guesses_class_mean face_guess_class_mean];
         face_guesses_nearest_neighbour = [face_guesses_nearest_neighbour face_guess_nn];
-        total = [total i];
+        actual_faces = [actual_faces i];
     end
 end
 
+class_means_results = ~(face_guesses_class_mean - actual_faces);
+nn_results = ~(face_guesses_nearest_neighbour - actual_faces);
+
+figure
+imagesc(confusionmat(face_guesses_class_mean, actual_faces));
+
+figure
+imagesc(confusionmat(face_guesses_nearest_neighbour, actual_faces));
+
+fprintf('Class Means results: %3.2f%%\n', sum(class_means_results)/size(class_means_results,2)*100)
+fprintf('Nearest Neighbour results: %3.2f%%\n', sum(nn_results)/size(nn_results,2)*100)
 
