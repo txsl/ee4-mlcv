@@ -152,9 +152,12 @@ end
 
 
 % Testing
-for i=1:NUM_FACES
-    for j=1:2
-        for k=1:NUM_FACES
+correct = 0;
+total = 0;
+for i=1:NUM_FACES   % For each set of faces with test data
+    for j=1:2       % For each face in the test series (2 per face)
+        dist = 999999999999999999999;
+        for k=1:NUM_FACES  % For each of the training sets of face data
             face_to_test = te{i}(:,j);
             comps = eigs{k};
             
@@ -163,10 +166,61 @@ for i=1:NUM_FACES
             Z = comps' * mean_im;
             recon = (comps * Z) + mean_ims{k};
             
-            pdist2(recon, face_to_test)  % need to take the diag
+            new_dist = sum(diag(pdist2(recon, face_to_test)));
+            norm_f = norm(recon - face_to_test);
+            if new_dist < dist
+%                 disp(sprintf('new closest match: %i', k))
+                dist = new_dist;
+                face_guess = k;
+            end
         end
+        fprintf('Closest face is %i. Correct is %i\n', face_guess, i);
+        if face_guess == i
+            correct = correct + 1;
+        end
+        total = total + 1;
     end
 end
 
 
+%% Q10
 
+% Getting the subspace
+mean_tr = mean(all_tr, 2);
+A = all_tr - repmat(mean_tr, 1, size(all_tr, 2));
+
+cov_small = A' * A;
+[ eigvecs_small, eigvals_small] = eig(cov_small, 'vector');
+vecs = A * eigvecs_small;
+vec_norms = normc(vecs);
+
+[ ~, I_small] = sort(eigvals_small, 'descend');
+
+pca_small = zeros(IM_WIDTH*IM_HEIGHT, 50);
+
+for i=1:size(vecs, 2)
+    idx = I_small(i);
+    pca_small(:,i) = vec_norms(:,idx); 
+end
+
+comps = pca_small;
+mean_classes_recon = cell(NUM_FACES, 1);
+all_face_recon = cell(NUM_FACES, 1);
+
+% Getting reconstructions of both class means and each image
+for i=1:NUM_FACES
+    set = tr{i};
+    mean_im = mean(set, 2);
+    
+    Z = comps' * (mean_im - mean_tr);
+    mean_classes_recon{i} = (comps * Z) + mean_tr;
+    
+    all_face_recon{i} = zeros(2576,8);
+    for k=1:8
+        face_to_recon = set(:,k);
+        
+        Z = comps' * face_to_recon;
+        face_recon = (comps * Z) + mean_tr;
+        all_face_recon{i}(:,k) = face_recon; 
+    end
+end
