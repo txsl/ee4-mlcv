@@ -152,8 +152,8 @@ end
 
 
 % Testing
-correct = 0;
-total = 0;
+face_guesses = [];
+known_faces = [];
 for i=1:NUM_FACES   % For each set of faces with test data
     for j=1:2       % For each face in the test series (2 per face)
         dist = 999999999999999999999;
@@ -166,8 +166,10 @@ for i=1:NUM_FACES   % For each set of faces with test data
             Z = comps' * mean_im;
             recon = (comps * Z) + mean_ims{k};
             
-            new_dist = sum(diag(pdist2(recon, face_to_test)));
-            norm_f = norm(recon - face_to_test);
+%             new_dist = sum(diag(pdist2(recon, face_to_test)));
+%             norm_f = norm(recon - face_to_test);
+            new_dist = sqrt(sum((recon - face_to_test).^2));
+            
             if new_dist < dist
 %                 disp(sprintf('new closest match: %i', k))
                 dist = new_dist;
@@ -175,10 +177,8 @@ for i=1:NUM_FACES   % For each set of faces with test data
             end
         end
         fprintf('Closest face is %i. Correct is %i\n', face_guess, i);
-        if face_guess == i
-            correct = correct + 1;
-        end
-        total = total + 1;
+        face_guesses = [face_guesses face_guess];
+        total = [total i];
     end
 end
 
@@ -219,8 +219,52 @@ for i=1:NUM_FACES
     for k=1:8
         face_to_recon = set(:,k);
         
-        Z = comps' * face_to_recon;
+        Z = comps' * (face_to_recon - mean_tr);
         face_recon = (comps * Z) + mean_tr;
         all_face_recon{i}(:,k) = face_recon; 
     end
 end
+
+% Time to test
+
+face_guesses_class_mean = [];
+face_guesses_nearest_neighbour = [];
+known_faces = [];
+total = [];
+for i=1:NUM_FACES   % For each set of faces with test data
+    for j=1:2       % For each face in the test series (2 per face)
+        dist = 999999999999999999999;
+        nn_dist = dist;
+        for k=1:NUM_FACES  % For each of the training sets of face data
+            face_to_test = te{i}(:,j);
+            
+            mean_im = face_to_test - mean_tr;  % Because we only have the mean centred image for the entire set
+
+            Z = comps' * mean_im;
+            recon = (comps * Z) + mean_tr;
+            
+            % For class means
+            new_dist = sqrt(sum((recon - mean_classes_recon{k}).^2));
+            
+            if new_dist < dist
+                dist = new_dist;
+                face_guess_class_mean = k;
+            end
+            
+            % For nearest neighbour
+            for l=1:8
+                new_nn_dist = sqrt(sum((recon - all_face_recon{k}(:,l)).^2));
+                if new_nn_dist < nn_dist
+                    nn_dist = new_nn_dist;
+                    face_guess_nn = k;
+                end
+            end
+        end
+        fprintf('Closest face is %i (class means) and %i (nearest neighbour). Correct is %i\n', face_guess_class_mean, face_guess_nn, i);
+        face_guesses_class_mean = [face_guesses_class_mean face_guess_class_mean];
+        face_guesses_nearest_neighbour = [face_guesses_nearest_neighbour face_guess_nn];
+        total = [total i];
+    end
+end
+
+
