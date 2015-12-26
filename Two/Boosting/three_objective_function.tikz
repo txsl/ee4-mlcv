@@ -1,0 +1,37 @@
+% This file was created by matlab2tikz v0.5.0 (commit 7d3a40b75185e14d29f24e0b1bf3db9dfd021915) running on MATLAB 8.4.
+%Copyright (c) 2008--2014, Nico Schlömer <nico.schloemer@gmail.com>
+%All rights reserved.
+%Minimal pgfplots version: 1.3
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=7.396046in,
+height=5.833333in,
+at={(0in,0in)},
+scale only axis,
+separate axis lines,
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=1,
+xmax=4,
+xlabel={Iteration},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+ymin=400000,
+ymax=700000,
+ylabel={J}
+]
+\addplot [color=blue,solid,forget plot]
+  table[row sep=crcr]{%
+1	688096.43\\
+2	434667.057160242\\
+3	430095.966860038\\
+4	429627.023314593\\
+};
+\end{axis}
+\end{tikzpicture}%

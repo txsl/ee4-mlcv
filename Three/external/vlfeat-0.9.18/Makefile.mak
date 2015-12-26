@@ -25,7 +25,7 @@
 # (either win32 or win64).
 
 VER = 0.9.18
-ARCH = win64
+ARCH = maci64
 DEBUG = no
 BRANCH = v$(VER)-$(ARCH)
 MSVSVER =
